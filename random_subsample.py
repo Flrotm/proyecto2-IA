@@ -4,7 +4,8 @@ clf = Classfication ()
 
 characteristics, emotions = clf.generate_datasets ()
 
-k = int (len (characteristics) / 10)
+k = 40
+iterations = 10
 
-accuracy = clf.k_fold_cross (characteristics, emotions, k, clf.clf.fit, clf.clf.predict)
+accuracy = clf.random_subsample (characteristics, emotions, k, iterations, clf.clf.fit, clf.clf.predict)
 print (accuracy)

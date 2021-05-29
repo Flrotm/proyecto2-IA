@@ -75,15 +75,13 @@ class Classfication:
     def calculate_accuracy (self, predicted, real):
         hits = 0
         for i in range (len(predicted)):
-            print (predicted[i], real[i])
             if predicted[i] == real[i]:
                 hits += 1
 
-        print (hits)
         return float (hits / len(predicted))
 
 
-    def k_fold_cross (self, x, y, k):
+    def k_fold_cross (self, x, y, k, train_func, test_func):
         accuracy = []
         for i in range (int (len (x) / k)):
             start = i*k
@@ -93,7 +91,30 @@ class Classfication:
             y_train = y[0:start] + y[end:]
             x_test = x[start:end]
             y_test = y[start:end]
-            self.clf.fit (x_train, y_train)
-            y_pd = self.clf.predict (x_test)
+            
+            train_func (x_train, y_train)
+            y_pd = test_func (x_test)
             accuracy.append (self.calculate_accuracy (y_pd, y_test))
+
+        return accuracy
+
+    def random_subsample (self, x, y, k, iterations, train_func, test_func):
+        accuracy = []
+        for i in range (iterations):
+            indexes = [np.random.randint (low=0, high=len(x)-k) for j in range (k)]
+            x_train = list(x)
+            y_train = list(y)
+            x_test = []
+            y_test = []
+
+            for index in indexes:
+                x_test.append (x[index])
+                y_test.append (y[index])
+                x_train.pop (index)
+                y_train.pop (index)
+            
+            train_func (x_train, y_train)
+            y_pd = test_func (x_test)
+            accuracy.append (self.calculate_accuracy (y_pd, y_test))
+
         return accuracy
