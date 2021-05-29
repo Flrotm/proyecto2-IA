@@ -23,7 +23,7 @@ class Emotion(Enum):
 class Classfication:
     
     # training_method: 0 = k-fold
-    def __init__ (self, training_method=0, k=4):
+    def __init__ (self):
         self.paths = [
             'CK+48/anger',
             'CK+48/contempt',
@@ -33,11 +33,9 @@ class Classfication:
             'CK+48/sadness',
             'CK+48/surprise'
         ]
-        self.clf = make_pipeline (StandardScaler (), LinearSVC(random_state=0, tol=1e-5))
+        self.clf = make_pipeline (StandardScaler (), LinearSVC(random_state=0, tol=1e-5, max_iter=5000))
         self.x = []
         self.y = []
-        self.training_method = training_method
-        self.k = k
     
     def generate_datasets (self):
         self.x = []
@@ -56,13 +54,13 @@ class Classfication:
             i += 1
         return self.x, self.y
 
-    def wavelet(pictures,n):
+    def wavelet(self, pictures,n):
         ca=pictures
         for i in range(n):
             ca,_=pywt.dwt2(ca, 'haar')
         return ca
 
-    def flatten(matrixs):
+    def flatten(self, matrixs):
         vectors=[]
         for i in range(len(matrixs)):
             vectors = vectors + [matrixs[i].reshape(24*24).tolist()]
@@ -73,3 +71,29 @@ class Classfication:
 
     def classify (self, x):
         return self.clf.predict (x)
+
+    def calculate_accuracy (self, predicted, real):
+        hits = 0
+        for i in range (len(predicted)):
+            print (predicted[i], real[i])
+            if predicted[i] == real[i]:
+                hits += 1
+
+        print (hits)
+        return float (hits / len(predicted))
+
+
+    def k_fold_cross (self, x, y, k):
+        accuracy = []
+        for i in range (int (len (x) / k)):
+            start = i*k
+            end = (i+1)*k
+
+            x_train = x[0:start] + x[end:]
+            y_train = y[0:start] + y[end:]
+            x_test = x[start:end]
+            y_test = y[start:end]
+            self.clf.fit (x_train, y_train)
+            y_pd = self.clf.predict (x_test)
+            accuracy.append (self.calculate_accuracy (y_pd, y_test))
+        return accuracy
