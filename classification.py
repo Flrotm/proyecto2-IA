@@ -7,6 +7,8 @@ import pywt
 from sklearn.svm import LinearSVC
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 from enum import Enum
 
 
@@ -23,7 +25,7 @@ class Emotion(Enum):
 class Classfication:
     
     # training_method: 0 = k-fold
-    def __init__ (self):
+    def __init__ (self,method):
         self.paths = [
             'CK+48/anger',
             'CK+48/contempt',
@@ -33,7 +35,13 @@ class Classfication:
             'CK+48/sadness',
             'CK+48/surprise'
         ]
-        self.clf = make_pipeline (StandardScaler (), LinearSVC(random_state=0, tol=1e-5, max_iter=5000))
+        if "knn" in method:
+            self.clf = make_pipeline (StandardScaler (), KNeighborsClassifier())
+        if "svm" in method:
+             self.clf = make_pipeline (StandardScaler (), LinearSVC(random_state=0, tol=1e-5, max_iter=5000))
+        if "tree" in method:
+            self.clf=make_pipeline (StandardScaler (), DecisionTreeClassifier(random_state=0))
+
         self.x = []
         self.y = []
     

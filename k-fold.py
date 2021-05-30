@@ -1,6 +1,8 @@
 from classification import Classfication
-
-clf = Classfication ()
+#method="svm"
+#method="knn"
+method="dtree"
+clf = Classfication (method)
 
 characteristics, emotions = clf.generate_datasets ()
 
