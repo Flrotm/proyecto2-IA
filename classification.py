@@ -36,7 +36,7 @@ class Classfication:
             'CK+48/surprise'
         ]
         if "knn" in method:
-            self.clf = make_pipeline (StandardScaler (), KNeighborsClassifier())
+            self.clf = make_pipeline (StandardScaler (), KNeighborsClassifier(n_neighbors=100))
         if "svm" in method:
              self.clf = make_pipeline (StandardScaler (), LinearSVC(random_state=0, tol=1e-5, max_iter=5000))
         if "tree" in method:
