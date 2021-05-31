@@ -8,6 +8,8 @@ from sklearn.svm import LinearSVC
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from enum import Enum
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
 
 
 class Emotion(Enum):
@@ -118,3 +120,24 @@ class Classfication:
             accuracy.append (self.calculate_accuracy (y_pd, y_test))
 
         return accuracy
+
+
+    def plot_cMatrix(self, x, y, k, train_func, test_func):
+        accuracy = []
+        for i in range (int (len (x) / k)):
+            start = i*k
+            end = (i+1)*k
+
+            x_train = x[0:start] + x[end:]
+            y_train = y[0:start] + y[end:]
+            x_test = x[start:end]
+            y_test = y[start:end]
+            
+            train_func (x_train, y_train)
+            y_pd = test_func (x_test)
+            
+
+        matrix = confusion_matrix([y_pd], y_test)
+        print(matrix)
+        return matrix
+
